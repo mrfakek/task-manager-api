@@ -94,18 +94,25 @@ class AccountServiceTest {
         account.setEmail(generateEmail());
         account.setPassword(testPassword);
         accountRepository.save(account);
+        account = new Account();
         account.setEmail(generateEmail());
         account.setPassword(testPassword);
         accountRepository.save(account);
+        account = new Account();
         account.setEmail(generateEmail());
         account.setPassword(testPassword);
         accountRepository.save(account);
+        account = new Account();
+        account.setEmail(generateEmail());
+        account.setPassword(testPassword);
+        accountRepository.save(account);
+        account = new Account();
+        account = new Account();
         account.setEmail(generateEmail());
         account.setPassword(testPassword);
         accountRepository.save(account);
         Pageable pageable = PageRequest.of(0, 3);
         Page<AccountResponseDto> page = accountService.getAccounts(pageable);
-        Assertions.assertNotNull(page);
         Assertions.assertEquals(3, page.getContent().size());
     }
 
