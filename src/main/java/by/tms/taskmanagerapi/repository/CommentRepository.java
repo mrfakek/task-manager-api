@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findByIdAndIssue_Id(Long id, Long issueId);
-    void deleteByIdAndIssue_Id(Comment comment, Long issueId);
     Page<Comment> findByIssue_Id(Long issueId, Pageable pageable);
+    boolean existsByIdAndAuthor_Email(Long id, String authorEmail);
+    boolean existsByIdAndIssue_Id(Long id, Long issueId);
+    void deleteByIdAndIssue_Id(Long id, Long issueId);
 }

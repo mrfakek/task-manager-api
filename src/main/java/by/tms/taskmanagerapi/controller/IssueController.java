@@ -160,7 +160,7 @@ public class IssueController {
             })
     public ResponseEntity<Void> deleteComment(@PathVariable("issueId") Long issueId,
                                               @PathVariable("commentId") Long commentId) {
-        issueService.deleteComment(issueId, commentId);
+        issueService.deleteComment( commentId, issueId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

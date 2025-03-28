@@ -58,7 +58,11 @@ public class IssueService {
     }
 
     public boolean isAuthorIssue(Long issueId, Authentication authentication) {
-        return issueRepository.existsByIdAndAssigneeEmail(issueId, authentication.getName());
+        return issueRepository.existsByIdAndAuthor_Email(issueId, authentication.getName());
+    }
+
+    public boolean isAuthorComment(Long commentId, Authentication authentication) {
+        return commentRepository.existsByIdAndAuthor_Email(commentId, authentication.getName());
     }
 
     public IssueResponseDto getIssueById(Long issueId) {
@@ -109,8 +113,10 @@ public class IssueService {
         return commentMapper.toCommentResponseDto(comment);
     }
 
-    public void deleteComment(Long issueId, Long commentId) {
-        Comment comment = commentRepository.findByIdAndIssue_Id(commentId, issueId).orElseThrow(()->new EntityNotFoundException("Comment not found"));
-        commentRepository.deleteByIdAndIssue_Id(comment, issueId);
+    public void deleteComment( Long commentId,Long issueId) {
+       if(!commentRepository.existsByIdAndIssue_Id(commentId, issueId)){
+           throw new EntityNotFoundException("Comment not found");
+       }
+        commentRepository.deleteByIdAndIssue_Id(commentId, issueId);
     }
 }
