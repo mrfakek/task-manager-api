@@ -50,7 +50,7 @@ public class AccountController {
     public ResponseEntity<Page<AccountResponseDto>> getAccountsList(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<AccountResponseDto> page = accountService.getAccounts(pageable);
-        return new ResponseEntity<>(page,HttpStatus.OK);
+        return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
     @GetMapping("/me")
@@ -59,15 +59,15 @@ public class AccountController {
     })
     public ResponseEntity<AccountResponseDto> getCurrentAccount(Authentication authentication) {
         AccountResponseDto account = accountService.getCurrentAccount(authentication);
-        return new ResponseEntity<>(account,HttpStatus.OK);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PutMapping
     @Operation(summary = "Update account details", description = "Updates the account details for the currently authenticated user.",
             responses = {
                     @ApiResponse(description = "Successful update of account details", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountResponseDto.class))),
-                    @ApiResponse(description = "Unauthorized request, user is not authenticated or does not have permission", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-                    @ApiResponse(description = "Bad request, invalid input data", responseCode = "400", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+                    @ApiResponse(description = "Bad request, invalid input data", responseCode = "400", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+                    @ApiResponse(description = "Unauthorized request, user is not authenticated or does not have permission", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
             })
     public ResponseEntity<AccountResponseDto> updateAccount(@RequestBody @Valid AccountCreateDto accountCreateDto,
                                                             Authentication authentication) {
@@ -80,8 +80,8 @@ public class AccountController {
     @Operation(summary = "Delete account by ID", description = "Deletes an account by its ID. Only accessible to users with 'ADMIN' role.",
             responses = {
                     @ApiResponse(description = "Successfully deleted account", responseCode = "204"),
-                    @ApiResponse(description = "Account not found", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-                    @ApiResponse(description = "Unauthorized, user does not have ADMIN role", responseCode = "403", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+                    @ApiResponse(description = "Unauthorized, user does not have ADMIN role", responseCode = "403", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+                    @ApiResponse(description = "Account not found", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
             })
     public ResponseEntity<Void> deleteAccountById(@PathVariable Long id) {
         accountService.deleteById(id);

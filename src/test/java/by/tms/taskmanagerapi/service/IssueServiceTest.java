@@ -9,10 +9,7 @@ import by.tms.taskmanagerapi.entity.*;
 import by.tms.taskmanagerapi.repository.AccountRepository;
 import by.tms.taskmanagerapi.repository.CommentRepository;
 import by.tms.taskmanagerapi.repository.IssueRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +47,7 @@ class IssueServiceTest {
     private Long idAsignee =1L;
     private Status currentStatus = Status.DONE;
     private Priority priority = Priority.HIGH;
+    private int emailIndex = 1;
 
     @Autowired
     public IssueServiceTest(IssueService issueService,
@@ -60,6 +58,14 @@ class IssueServiceTest {
         this.issueRepository = issueRepository;
         this.accountRepository = accountRepository;
         this.commentRepository = commentRepository;
+    }
+
+    private String generateEmail() {
+        return "test" + (emailIndex++) + "@gmail.com";
+    }
+    @AfterAll
+    void tearDown() {
+        accountRepository.deleteAll();
     }
 
     @BeforeAll
@@ -93,19 +99,18 @@ class IssueServiceTest {
 
     @Test
     void isUserAssignedToIssue() {
-        Account testAccount = new Account();
-        testAccount.setEmail("another@gmail.com");
-        testAccount.setPassword(testPassword);
-        testAccount = accountRepository.save(testAccount);
+        Account account = new Account();
+        account.setEmail(generateEmail());
+        account.setPassword(testPassword);
+        account = accountRepository.save(account);
         Issue issue = new Issue();
-        issue.setAuthor(testAccount);
-        issue.setAssignee(testAccount);
+        issue.setAuthor(account);
+        issue.setAssignee(account);
         issue.setTitle(title);
         issue.setDescription(description);
         issue.setPriority(priority);
-        issue.setAssignee(testAccount);
         issue = issueRepository.save(issue);
-        when(authentication.getName()).thenReturn(testAccount.getEmail());
+        when(authentication.getName()).thenReturn(account.getEmail());
         Assertions.assertTrue(issueService.isUserAssignedToIssue(issue.getId(),authentication));
         when(authentication.getName()).thenReturn(testEmail);
         Assertions.assertFalse(issueService.isUserAssignedToIssue(issue.getId(),authentication));
@@ -113,7 +118,7 @@ class IssueServiceTest {
 
     @Test
     void isAuthorIssue(){
-        when(authentication.getName()).thenReturn("badEmail@gmail.com");
+        when(authentication.getName()).thenReturn(generateEmail());
         Assertions.assertFalse(issueService.isAuthorIssue(testIssue.getId(),authentication));
         when(authentication.getName()).thenReturn(testEmail);
         Assertions.assertTrue(issueService.isAuthorIssue(testIssue.getId(),authentication));
@@ -132,7 +137,7 @@ class IssueServiceTest {
         comment.setContent(testContent);
         comment.setIssue(issue);
         commentRepository.save(comment);
-        when(authentication.getName()).thenReturn("badEmail@gmail.com");
+        when(authentication.getName()).thenReturn(generateEmail());
         Assertions.assertFalse(issueService.isAuthorComment(testIssue.getId(),authentication));
         when(authentication.getName()).thenReturn(testEmail);
         Assertions.assertTrue(issueService.isAuthorComment(testIssue.getId(),authentication));
@@ -171,6 +176,73 @@ class IssueServiceTest {
         Pageable pageable = PageRequest.of(0, 3);
         Page<IssueResponseDto> page = issueService.getIssuePage(pageable);
         Assertions.assertEquals(3, page.getContent().size());
+    }
+
+    @Test
+    void getIssuePageByAuthorId(){
+        Account account = new Account();
+        account.setEmail(generateEmail());
+        account.setPassword(testPassword);
+       account = accountRepository.save(account);
+        Issue issue = new Issue();
+        issue.setAuthor(account);
+        issue.setTitle(title);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(account);
+        issue.setTitle(title);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(account);
+        issue.setTitle(title);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(account);
+        issue.setTitle(title);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(account);
+        issue.setTitle(title);
+        issueRepository.save(issue);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<IssueResponseDto> page = issueService.getIssuePageByAuthorId(account.getId(), pageable);
+        Assertions.assertEquals(5, page.getContent().size());
+    }
+
+    @Test
+    void getIssuePageByAssignedId(){
+        Account account = new Account();
+        account.setEmail(generateEmail());
+        account.setPassword(testPassword);
+        account = accountRepository.save(account);
+        Issue issue = new Issue();
+        issue.setAuthor(testAccount);
+        issue.setTitle(title);
+        issue.setAssignee(account);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(testAccount);
+        issue.setTitle(title);
+        issue.setAssignee(account);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(testAccount);
+        issue.setTitle(title);
+        issue.setAssignee(account);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(testAccount);
+        issue.setTitle(title);
+        issue.setAssignee(account);
+        issueRepository.save(issue);
+        issue = new Issue();
+        issue.setAuthor(testAccount);
+        issue.setTitle(title);
+        issue.setAssignee(account);
+        issueRepository.save(issue);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<IssueResponseDto> page = issueService.getIssuePageByAssignedId(account.getId(), pageable);
+        Assertions.assertEquals(5, page.getContent().size());
     }
 
     @Test

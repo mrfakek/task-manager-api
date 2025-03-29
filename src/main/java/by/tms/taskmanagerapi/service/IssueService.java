@@ -54,7 +54,7 @@ public class IssueService {
     }
 
     public boolean isUserAssignedToIssue(Long issueId, Authentication authentication) {
-        return issueRepository.existsByIdAndAssigneeEmail(issueId, authentication.getName());
+        return issueRepository.existsByIdAndAssignee_Email(issueId, authentication.getName());
     }
 
     public boolean isAuthorIssue(Long issueId, Authentication authentication) {
@@ -72,6 +72,14 @@ public class IssueService {
 
     public Page<IssueResponseDto> getIssuePage(Pageable pageable) {
         return issueRepository.findAll(pageable).map(issueMapper::toIssueResponseDto);
+    }
+
+    public Page<IssueResponseDto> getIssuePageByAuthorId(Long authorId, Pageable pageable) {
+        return issueRepository.findByAuthor_Id(authorId, pageable).map(issueMapper::toIssueResponseDto);
+    }
+
+    public Page<IssueResponseDto> getIssuePageByAssignedId(Long assigneeId, Pageable pageable) {
+        return issueRepository.findByAssignee_Id(assigneeId, pageable).map(issueMapper::toIssueResponseDto);
     }
 
     public IssueResponseDto updateIssue(Long issueId, IssueCreateDto issueCreateDto) {
